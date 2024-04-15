@@ -32,7 +32,3 @@ def get_busy_employees():
 def get_important_tasks():
     return
     pass
-
-if __name__ = "__name__":
-    import unicorn
-    unicorn.run(app, host="127.0.0.1", port=800)

@@ -1,25 +1,26 @@
-from dao.employees_dao import EmployeeDAO
+from dao.employees_dao import EmployeesDao
 
 
-class EmployeeService:
-    def __init__(self, employee_dao: EmployeeDAO):
-        self.employee_dao = employee_dao
+class EmployeesService:
+    def __init__(self):
+        self.employees_dao = EmployeesDao()
 
-    def create_employee(self, employee_data):
-        return self.employee_dao.create_employee(employee_data)
+    async def create_employee(self, session, employee_data):
+        created = await self.employees_dao.create_employee(session, employee_data)
+        return created
 
-    def get_employee(self, employee_id):
-        return self.employee_dao.get_employee(employee_id)
+    async def get_employee(self, session, employee_id):
+        employee = await get_employee(session, employee_id)
+        return employee
 
-    def update_employee(self, employee_id, updated_data):
-        return self.employee_dao.update_employee(employee_id, updated_data)
+    async def update_employee(self, employee_id, employee_data):
+        updated = await self.employees_dao.update_employee(employee_id, employee_data)
+        return updated
 
-    def delete_employee(self, employee_id):
-        return self.employee_dao.delete_employee(employee_id)
+    async def delete_employee(self, employee_id):
+        deleted = await self.employees_dao.delete_employee(employee_id)
+        return deleted
 
-    def __init__(self, employee_dao: EmployeeDAO):
-        self.employee_dao = employee_dao
-
-    def get_busy_employees(self):
-        return self.employee_dao.get_busy_employees()
-
+    async def get_busy_employees(self):
+        busy_employees = await self.employees_dao.get_busy_employees
+        return busy_employees

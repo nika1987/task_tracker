@@ -32,15 +32,15 @@ README_FILE = 'README.md'
 DB_URI = (f'postgresql+asyncpg://{sets.POSTGRES_USER}:{sets.POSTGRES_PASSWORD}'
           f'@{sets.POSTGRES_HOST}:{sets.POSTGRES_PORT}/{sets.POSTGRES_DB}')
 
-JWT_SECRET = sets.JWT_SECRET
-JWT_ALGO = sets.JWT_ALGO
-JWT_EXP_HOURS = sets.JWT_EXP_HOURS
+#JWT_SECRET = sets.JWT_SECRET
+#JWT_ALGO = sets.JWT_ALGO
+#JWT_EXP_HOURS = sets.JWT_EXP_HOURS
 
-TOKEN_URL = '/login'
+#TOKEN_URL = '/login'
 
-DEADLINE_HOURS = 1
-TZ = timezone(timedelta(hours=sets.TZ_SHIFT))
+#DEADLINE_HOURS = 1
+#TZ = timezone(timedelta(hours=sets.TZ_SHIFT))
 
-API_TITLE = sets.API_TITLE
-API_DESCRIPTION = sets.API_DESCRIPTION
-API_VERSION = sets.API_VERSION
+#API_TITLE = sets.API_TITLE
+#API_DESCRIPTION = sets.API_DESCRIPTION
+#API_VERSION = sets.API_VERSION
