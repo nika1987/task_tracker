@@ -12,12 +12,12 @@ class TaskService:
     async def get_task(self, task_id):
         return await self.task_dao.get_task(task_id)
 
-    async def update_task(self, task_id, updated_data: TaskChangeSchema):
-        return await self.task_dao.update_task(task_id, updated_data)
-
-    async def delete_task(self, task_id):
-        return await self.task_dao.delete_task(task_id)
-
     async def get_important_tasks(self):
-        return await self.task_dao.get_important_tasks()
+        unassigned_tasks = await self.task_dao.get_unassigned_tasks()
+        dependent_tasks = await self.task_dao.get_dependent_tasks()
 
+        # Логика поиска подходящих сотрудников
+        least_loaded_employee = await self.task_dao.find_least_loaded_employee()
+
+        # Возвращает список объектов [{Важная задача, Срок, [ФИО сотрудника]}]
+        return important_tasks

@@ -1,4 +1,5 @@
 import sqlalchemy as sqa
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from dao import Base
 
@@ -18,5 +19,8 @@ class Tasks(Base):
     title = sqa.Column(sqa.String)
     description = sqa.Column(sqa.String)
     status = sqa.Column(sqa.String)
-    employee_id = sqa.Column(sqa.Integer)
+    employee_id = sqa.Column(sqa.Integer, ForeignKey('employees.id'))
+    parent_task_id = sqa.Column(sqa.Integer, ForeignKey('tasks.id'))
+
     employees = relationship("Employees", back_populates='tasks')
+    parent_task = relationship("Tasks", remote_side=[id])

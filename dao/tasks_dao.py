@@ -58,3 +58,19 @@ class TaskDAO:
             busy_employees = [employee.name for employee in result.scalars()]
 
             return busy_employees
+
+    async def get_unassigned_tasks(self):
+        # Запрос задач, которые не взяты в работу
+        pass
+
+    async def get_dependent_tasks(self):
+        # Запрос задач, от которых зависят другие задачи
+        pass
+
+    async def find_least_loaded_employee(self):
+        # Поиск наименее загруженного сотрудника
+        pass
+
+    async def find_employee_for_task(self, task_id):
+        # Поиск сотрудника для выполнения важной задачи
+        pass
