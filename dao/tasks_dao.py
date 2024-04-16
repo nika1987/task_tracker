@@ -1,76 +1,73 @@
-import asyncio
-
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import create_async_engine, async_session
-from sqlalchemy.testing import db
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from dao.models import Tasks
+from dao.models import Task
 
-from services.shemas import TaskChangeSchema, BaseTasksSchema
+from services.schemas import TaskChangeSchema, BaseTaskSchema
 
 
 class TaskDAO:
     def __init__(self):
-        self.model = None
+        self.model = Task
 
-    def init(self):
-        self.model = Tasks
+    async def get_all_tasks(self, db: AsyncSession):
+        async with db.begin():
+            query = select(self.model)
+            result = await db.execute(query)
+            tasks = result.scalars().all()
+            return tasks
 
-    async def create_task(self, task_data: BaseTasksSchema):
-        new_task = {
-            "title": task_data.title,
-            "description": task_data.description,
-            "status": task_data.status
-        }
+    async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
+        new_task = task_data.dict()
         async with db.begin():
             result = await db.execute(
                 self.model.table.insert().values(new_task)
             )
             return bool(result.rowcount)
 
-    async def get_task(self, task_id):
-        async with self as session:
-            query = select(Tasks).filter(Tasks.id == task_id)
-            result = await session.execute(query)
-            employee = result.scalars().first()
-            return employee
+    async def get_task(self, db: AsyncSession, task_id):
+        async with db.begin():
+            query = select(self.model).filter(Task.id == task_id)
+            result = await db.execute(query)
+            task = result.scalars().first()
+            return task
 
-    @staticmethod
-    async def update_task(task_id, updated_data: TaskChangeSchema):
-        await asyncio.sleep(1)
-        updated_data.promote_task('New Task')
-        updated_data.delete_task_fields()
-        return f"Task {task_id} updated with data: {updated_data.dict()}"
+    async def update_task(self, task_id, db: AsyncSession, updated_data: TaskChangeSchema):
+        async with db.begin():
+            result = await db.execute(
+                self.model.table.update()
+                .where(self.model.id == task_id)
+                .values(updated_data.dict())
+            )
+            return bool(result.rowcount)
 
-    @staticmethod
-    async def delete_task(task_id):
-        await asyncio.sleep(1)
-        return f"Task {task_id} deleted"
+    async def delete_task(self, task_id, db: AsyncSession, ):
+        async with db.begin():
+            result = await db.execute(
+                self.model.table.delete().where(self.model.id == task_id)
+            )
+        return bool(result.rowcount)
 
-    @property
-    async def get_important_tasks(self):
-        DATABASE_URL: str = "postgresql+asyncpg://username:password@localhost/dbname"
-        engine = create_async_engine(DATABASE_URL, echo=True)
+    async def get_important_tasks(self, db: AsyncSession):
+        async with db.begin():
+            query = select(self.model).filter(self.model.important == True)
+            result = await db.execute(query)
+            important_tasks = result.scalars().all()
+            return important_tasks
 
-        async with async_session(engine) as session:
-            stmt = select(Tasks).filter(Tasks.positions == 'busy')
-            result = await session.execute(stmt)
-            busy_employees = [employee.name for employee in result.scalars()]
-
-            return busy_employees
-
-    async def get_unassigned_tasks(self):
+    async def get_unassigned_tasks(self, db: AsyncSession):
         # Запрос задач, которые не взяты в работу
-        pass
+        async with db.begin():
+            query = select(self.model).filter(self.model.assigned_to == None)
+            result = await db.execute(query)
+            unassigned_tasks = result.scalars().all()
+            return unassigned_tasks
 
-    async def get_dependent_tasks(self):
+    async def get_dependent_tasks(self, db: AsyncSession):
         # Запрос задач, от которых зависят другие задачи
-        pass
-
-    async def find_least_loaded_employee(self):
-        # Поиск наименее загруженного сотрудника
-        pass
-
-    async def find_employee_for_task(self, task_id):
-        # Поиск сотрудника для выполнения важной задачи
-        pass
+        async with db.begin():
+            pass
+            query = select(self.model).filter(self.model.depends_on != None)
+            result = await db.execute(query)
+            dependent_tasks = result.scalars().all()
+            return dependent_tasks

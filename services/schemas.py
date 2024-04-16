@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from sqlalchemy.dialects.postgresql import Any
 
 
-class BaseEmployeesSchema(BaseModel):
+class BaseEmployeeSchema(BaseModel):
     """ The base schema to work with employees data"""
     name: str
     positions: str
@@ -12,7 +12,7 @@ class BaseEmployeesSchema(BaseModel):
         orm_mode = True
 
 
-class BaseTasksSchema(BaseModel):
+class BaseTaskSchema(BaseModel):
     """ The base schema to work with employees data"""
     title: str
     description: str
@@ -20,7 +20,14 @@ class BaseTasksSchema(BaseModel):
     employee_id: int
 
 
-class EmployeesChangeSchema(BaseEmployeesSchema):
+class EmployeesSchema(BaseEmployeeSchema):
+    """This schema used as serializer to get a list of tables"""
+
+    class Config:
+        orm_mode = True
+
+
+class EmployeeChangeSchema(BaseEmployeeSchema):
     """ The base schema with additional methods"""
 
     def promote_employee(self, new_position):
@@ -32,7 +39,7 @@ class EmployeesChangeSchema(BaseEmployeesSchema):
             self.__dict__.pop(field, None)
 
 
-class TaskChangeSchema(BaseTasksSchema):
+class TaskChangeSchema(BaseTaskSchema):
     """ The base schema with additional methods"""
 
     def __init__(self, /, **data: Any):

@@ -1,12 +1,12 @@
 from dao.tasks_dao import TaskDAO
-from services.shemas import BaseTasksSchema, TaskChangeSchema
+from services.schemas import BaseTaskSchema, TaskChangeSchema
 
 
 class TaskService:
     def __init__(self, task_dao: TaskDAO):
         self.task_dao = task_dao
 
-    def create_task(self, task_data: BaseTasksSchema):
+    def create_task(self, task_data: BaseTaskSchema):
         return self.task_dao.create_task(task_data)
 
     async def get_task(self, task_id):
@@ -20,4 +20,4 @@ class TaskService:
         least_loaded_employee = await self.task_dao.find_least_loaded_employee()
 
         # Возвращает список объектов [{Важная задача, Срок, [ФИО сотрудника]}]
-        return important_tasks
+        #return important_tasks

@@ -1,17 +1,28 @@
-from dao.employees_dao import EmployeesDao
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
+
+from dao.employees_dao import EmployeeDao
+
+from services.schemas import EmployeesSchema
 
 
 class EmployeesService:
-    def __init__(self):
-        self.employees_dao = EmployeesDao()
+    def __init__(self, dao: EmployeeDao = EmployeeDao()) -> None:
+        self.dao = dao
+        self.employees_schema = EmployeesSchema
 
-    async def create_employee(self, session, employee_data):
-        created = await self.employees_dao.create_employee(session, employee_data)
-        return created
+    async def get_all_employees(self, db: AsyncSession):
+        employees = await self.dao.get_all_employees(db)
+        if not employees:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='Cannot find vacant tables')
 
-    async def get_employee(self, session, employee_id):
-        employee = await get_employee(session, employee_id)
-        return employee
+        return employees
+    #async def get_employee(self, session, employee_id):
+        #employee = await get_employees(session, employee_id)
+        #return employee
 
     async def update_employee(self, employee_id, employee_data):
         updated = await self.employees_dao.update_employee(employee_id, employee_data)

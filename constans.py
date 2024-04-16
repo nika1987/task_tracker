@@ -1,6 +1,5 @@
 """This file contains constants to configure the application"""
-from datetime import timedelta, timezone
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 # --------------------------------------------------------------------------
 
 ENV_FILE = '.env'

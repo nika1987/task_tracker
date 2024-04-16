@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from dao import Base
 
 
-class Employees(Base):
+class Employee(Base):
     __tablename__ = "employees"
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
     name = sqa.Column(sqa.String)
@@ -13,7 +13,7 @@ class Employees(Base):
     tasks = relationship("Tasks", back_populates='employee')
 
 
-class Tasks(Base):
+class Task(Base):
     __tablename__ = "tasks"
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
     title = sqa.Column(sqa.String)
@@ -23,4 +23,4 @@ class Tasks(Base):
     parent_task_id = sqa.Column(sqa.Integer, ForeignKey('tasks.id'))
 
     employees = relationship("Employees", back_populates='tasks')
-    parent_task = relationship("Tasks", remote_side=[id])
+    parent_task = relationship("Tasks", remote_side=[id], back_populates='child_tasks')
