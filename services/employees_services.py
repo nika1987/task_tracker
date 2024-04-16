@@ -1,6 +1,6 @@
-from fastapi import HTTPException
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette import status
+from fastapi import HTTPException, status
 
 from dao.employees_dao import EmployeeDao
 
@@ -25,7 +25,7 @@ class EmployeesService:
         #return employee
 
     async def update_employee(self, employee_id, employee_data):
-        updated = await self.employees_dao.update_employee(employee_id, employee_data)
+        updated = await self.dao.update_employee(employee_id, employee_data)
         return updated
 
     async def delete_employee(self, employee_id):
