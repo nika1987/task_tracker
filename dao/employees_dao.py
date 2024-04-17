@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dao.models import Employee, Task
 
-from services.schemas import EmployeeChangeSchema, BaseEmployeeSchema
+from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema
 
 
 class EmployeeDao:
@@ -44,7 +44,7 @@ class EmployeeDao:
             employee = result.scalars().first()
             return employee
 
-    async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeChangeSchema):
+    async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeCreateUpdateSchema):
         # Реализация логики для обновления информации о сотруднике
         async with db.begin():
             result = await db.execute(

@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Depends
+
+from routers import employees_router
 from services import schemas
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +9,7 @@ from container import employees_service
 from utils import get_db
 
 app = FastAPI()
-
+app.include_router(employees_router)
 
 @app.get(
     '/employees/vacant', response_model=list[schemas.BaseEmployeeSchema],

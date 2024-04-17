@@ -1,5 +1,5 @@
 from dao.tasks_dao import TaskDAO
-from services.schemas import BaseTaskSchema, TaskChangeSchema
+from services.schemas import BaseTaskSchema
 
 
 class TaskService:

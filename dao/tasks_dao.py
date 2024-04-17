@@ -1,9 +1,11 @@
+from typing import Sequence
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dao.models import Task
 
-from services.schemas import TaskChangeSchema, BaseTaskSchema
+from services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
 
 
 class TaskDAO:
@@ -32,7 +34,7 @@ class TaskDAO:
             task = result.scalars().first()
             return task
 
-    async def update_task(self, task_id, db: AsyncSession, updated_data: TaskChangeSchema):
+    async def update_task(self, task_id, db: AsyncSession, updated_data: TaskCreateUpdateSchema):
         async with db.begin():
             result = await db.execute(
                 self.model.table.update()
@@ -58,9 +60,9 @@ class TaskDAO:
     async def get_unassigned_tasks(self, db: AsyncSession):
         # Запрос задач, которые не взяты в работу
         async with db.begin():
-            query = select(self.model).filter(self.model.assigned_to == None)
+            query = select(self.model).filter(self.model.assigned_to is None)
             result = await db.execute(query)
-            unassigned_tasks = result.scalars().all()
+            unassigned_tasks: Sequence[Task] = result.scalars().all()
             return unassigned_tasks
 
     async def get_dependent_tasks(self, db: AsyncSession):

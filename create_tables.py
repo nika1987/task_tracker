@@ -1,7 +1,7 @@
 from asyncio import run
-
 from dao import Base, engine
 from utils import get_db
+from dao.models import Employee, Task
 
 
 async def create_tables() -> None:
