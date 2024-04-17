@@ -32,7 +32,7 @@ class EmployeeService:
 
         async with db.begin():
             result = await db.execute(
-                self.model.employee.insert().values(new_employee)
+                self.model.insert().values(new_employee)
             )
             return bool(result.rowcount)
 
