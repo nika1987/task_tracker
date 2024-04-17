@@ -13,7 +13,7 @@ employee_router = APIRouter(tags=['employees'])
 async def create_employee_router(
         data: EmployeeCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
-    await employees_service.add_new(db, data)
+    await employees_service.create_employee(db, data)
 
 
 @employee_router.get('/list')
@@ -33,9 +33,9 @@ async def single_employee_router(
 
 @employee_router.put('/update')
 async def update_employee_router(
-        employee_id: int, db: AsyncSession = Depends(get_db)
+        employee_id: int, data: EmployeeCreateUpdateSchema,  db: AsyncSession = Depends(get_db)
 ):
-    await employees_service.update_employee(db, employee_id)
+    await employees_service.update_employee(db, data, employee_id)
 
 
 @employee_router.delete('/delete')
