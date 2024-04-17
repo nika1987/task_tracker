@@ -1,6 +1,8 @@
 from sqlalchemy import select
 
 from sqlalchemy.ext.asyncio import AsyncSession
+import uvloop.handles.udp
+from uvloop.handles.udp import data
 
 from dao.models import Employee, Task
 
@@ -31,17 +33,15 @@ class EmployeeService:
         new_employee = employee_data.dict()
 
         async with db.begin():
-            result = await db.execute(
-                self.model.insert().values(new_employee)
-            )
-            return bool(result.rowcount)
+            db.add(self.model(**new_employee, **employee_data.dict()))
+            await db.commit()
 
     async def get_employee(self, db: AsyncSession, employee_id):
         async with db.begin():
             query = select(self.model).filter(Employee.id == employee_id)
             result = await db.execute(query)
-            employee = result.scalars().first()
-            return employee
+            employees = result.scalars().all()
+            return employees
 
     async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeCreateUpdateSchema):
         # Реализация логики для обновления информации о сотруднике
