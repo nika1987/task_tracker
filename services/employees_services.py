@@ -1,8 +1,6 @@
-from sqlalchemy import select
+from sqlalchemy import select, update, delete
 
 from sqlalchemy.ext.asyncio import AsyncSession
-import uvloop.handles.udp
-from uvloop.handles.udp import data
 
 from dao.models import Employee, Task
 
@@ -10,10 +8,10 @@ from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema
 
 
 class EmployeeService:
-    """The TableDao class provides access to the table spreadsheet"""
+    """The EmployeeDao class provides access to the table spreadsheet"""
 
     def __init__(self) -> None:
-        """Initialize the TableDao class"""
+        """Initialize the EmployeeDao class"""
         self.model = Employee
         self.tasks = Task
 
@@ -33,8 +31,9 @@ class EmployeeService:
         new_employee = employee_data.dict()
 
         async with db.begin():
-            db.add(self.model(**new_employee, **employee_data.dict()))
-            await db.commit()
+            db.add(self.model(**new_employee))
+
+        await db.commit()
 
     async def get_employee(self, db: AsyncSession, employee_id):
         async with db.begin():
@@ -46,20 +45,16 @@ class EmployeeService:
     async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeCreateUpdateSchema):
         # Реализация логики для обновления информации о сотруднике
         async with db.begin():
-            result = await db.execute(
-                self.model.table.update()
-                .where(self.model.id == employee_id)
-                .values(employees_data.dict())
-            )
-            return bool(result.rowcount)
+            query = update(self.model).where(self.model.id == employee_id).values(employees_data.dict())
+            await db.execute(query)
+            await db.commit()
 
     async def delete_employee(self, db: AsyncSession, employee_id):
         # Реализация логики для удаления сотрудника
         async with db.begin():
-            result = await db.execute(
-                self.model.table.delete().where(self.model.id == employee_id)
-            )
-            return bool(result.rowcount)
+            query = delete(self.model).where(self.model.id == employee_id)
+            await db.execute(query)
+            await db.commit()
 
     async def get_busy_employees(self, db: AsyncSession):
         async with db.begin():

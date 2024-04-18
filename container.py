@@ -6,4 +6,4 @@ from dao.tasks_dao import TaskDAO
 task_dao = TaskDAO()
 employee_dao = EmployeeDao()
 employees_service = EmployeeService()
-tasks_service = TaskService(task_dao)
+tasks_service = TaskService()
