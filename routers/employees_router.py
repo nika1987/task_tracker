@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from container import employees_service
-from dao.models import Employee
-from services.schemas import EmployeesSchema, EmployeeCreateUpdateSchema
+
+from services.schemas import EmployeeCreateUpdateSchema
 from utils import get_db
 
-employee_router = APIRouter(tags=['employees'])
+employee_router = APIRouter(tags=['employees'], prefix='/employees')
 
 
 @employee_router.post('/create')

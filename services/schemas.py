@@ -18,7 +18,7 @@ class BaseTaskSchema(BaseModel):
     description: str
     status: str
     employee_id: int
-    parent_task_id: int
+    parent_task_id: None | int
 
     class Config:
         orm_mode = True
