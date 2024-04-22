@@ -47,6 +47,6 @@ async def update_employee_router(
     await employees_service.delete_employee(db, employee_id)
 
 
-@employee_router.get('/busy')
+@employee_router.get('/active')
 async def get_busy_employees(db: AsyncSession = Depends(get_db)):
     return await employees_service.get_busy_employees(db)

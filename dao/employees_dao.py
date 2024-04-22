@@ -67,11 +67,11 @@ class EmployeeDao:
             query = (
                 select(Employee).
                 join(Task).
-                filter(self.tasks.employee_id == self.model.employees.id).
-                filter(self.tasks.status == 'active').
+                filter(self.tasks.status == self.model.employee_positions).
+                filter(self.tasks.tasks_status == "active").
                 options(selectinload(Employee.tasks)).
-                group_by(Employee.id).  # Добавлено группирование по id сотрудника
-                order_by(func.count(Task.id).desc())  # Исправлено упорядочивание по убыванию количества задач
+                group_by(Employee.id).
+                order_by(func.count(Task.id).desc())
             )
             result = await db.execute(query)
             employees_with_active_tasks = result.scalars().all()

@@ -62,8 +62,8 @@ class EmployeeService:
             query = (
                 select(Employee).
                 join(Task).
-                filter(Task.employee_id == Employee.id).
-                filter(Task.status == 'active').
+                filter(Task.tasks_status == Employee.positions).
+                filter(Task.tasks_status == 'active').
                 options(selectinload(Employee.tasks)).
                 group_by(Employee.id).
                 order_by(func.count(Task.id).desc())
