@@ -52,24 +52,14 @@ class TaskDAO:
 
     async def get_important_tasks(self, db: AsyncSession):
         async with db.begin():
-            query = select(self.model).filter(self.model.important == True)
+            query = select(
+                self.model).filter(
+                self.model.status != 'active',
+                self.model.parent_task_id != None, self.model.parent_task.has(
+                    self.model.status == 'active'
+                )
+            )
+
             result = await db.execute(query)
-            important_tasks = result.scalars().all()
+            important_tasks = result.unique().scalars().all()
             return important_tasks
-
-    async def get_unassigned_tasks(self, db: AsyncSession):
-        # Запрос задач, которые не взяты в работу
-        async with db.begin():
-            query = select(self.model).filter(self.model.assigned_to is None)
-            result = await db.execute(query)
-            unassigned_tasks: Sequence[Task] = result.scalars().all()
-            return unassigned_tasks
-
-    async def get_dependent_tasks(self, db: AsyncSession):
-        # Запрос задач, от которых зависят другие задачи
-        async with db.begin():
-            pass
-            query = select(self.model).filter(self.model.depends_on != None)
-            result = await db.execute(query)
-            dependent_tasks = result.scalars().all()
-            return dependent_tasks

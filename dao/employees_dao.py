@@ -1,11 +1,12 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, desc, asc
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.functions import count
 
 from dao.models import Employee, Task
 
-from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema
+from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, EmployeesSchema, TaskSchema
 
 
 class EmployeeDao:
@@ -62,31 +63,49 @@ class EmployeeDao:
             )
             return bool(result.rowcount)
 
-    async def get_employees_busy(self, db: AsyncSession):
-        async with db.begin():
-            query = (
-                select(Employee).
-                join(Task).
-                filter(self.tasks.status == self.model.employee_positions).
-                filter(self.tasks.tasks_status == "active").
-                options(selectinload(Employee.tasks)).
-                group_by(Employee.id).
-                order_by(func.count(Task.id).desc())
+    async def get_employees_busy(self, db: AsyncSession) -> list:
+        async with (db.begin()):
+            query = select(
+                self.model, func.count(self.tasks.id).label('tasks_count')
+            ).join(self.tasks).filter(
+                self.tasks.status == 'active'
+            ).group_by(self.model).order_by(
+                desc('tasks_count')
             )
+
             result = await db.execute(query)
             employees_with_active_tasks = result.scalars().all()
-            return employees_with_active_tasks
 
-    async def find_least_loaded_employee(self, db: AsyncSession):
+        return employees_with_active_tasks
+
+    async def find_least_loaded_employee(
+            self, db: AsyncSession, task: TaskSchema
+    ):
         # Поиск наименее загруженного сотрудника
         async with db.begin():
-            query = select(self.model).filter(self.model.positions != 'busy')
-            result = await db.execute(query)
-            find_least_loaded_employee = result.scalars().all()
-            return find_least_loaded_employee
+            free_employee_query = select(self.model).filter(
+                self.model.tasks == None
+            )
+            result = await db.execute(free_employee_query)
+            free_employee = result.unique().scalars().first()
+            less_loaded_employee_query = select(
+                self.model, count(self.model.tasks).label('count')
+            ).join(self.model.tasks).group_by(self.model.id).order_by(
+                asc('count')
+            )
+            result = await db.execute(less_loaded_employee_query)
+            least_loaded_employee = result.unique().scalars().first()
+            optimal_employee_query = select(
+                self.model
 
-    async def find_employee_for_task(self, db: AsyncSession):
-        # Поиск сотрудника для выполнения важной задачи
-        async with db.begin():
-            pass
-            pass
+            ).join(self.model.tasks).filter(
+                self.model.tasks.any(
+                    parent_task_id=task.parent_task_id, status='active')
+            ).group_by(self.model).having(
+                count(self.model.tasks) <= len(least_loaded_employee.tasks)
+            )
+
+            result = await db.execute(optimal_employee_query)
+            optimal_employee = result.unique().scalars().first()
+
+            return optimal_employee or free_employee or least_loaded_employee

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from container import employees_service
+from container import employees_service, tasks_service
 
 from services.schemas import EmployeeCreateUpdateSchema
 from utils import get_db
@@ -22,6 +22,24 @@ async def employees_list_router(
 ):
     all_employees = await employees_service.get_all_employees(db)
     return all_employees
+
+
+@employee_router.get('/busy')
+async def get_busy_employees(db: AsyncSession = Depends(get_db)):
+    return await employees_service.get_employees_busy(db)
+
+
+@employee_router.get('/free')
+async def get_free_employees(db: AsyncSession = Depends(get_db)):
+    important_tasks = await tasks_service.get_important_tasks(db)
+    less_busy_employees = []
+    for task in important_tasks:
+        found_employee = await employees_service.find_least_loaded_employee(
+            db, task)
+        less_busy_employees.append(
+            {'task': task, 'employee': found_employee.name})
+
+    return less_busy_employees
 
 
 @employee_router.get('/{employee_id}')
@@ -45,8 +63,3 @@ async def update_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
     await employees_service.delete_employee(db, employee_id)
-
-
-@employee_router.get('/active')
-async def get_busy_employees(db: AsyncSession = Depends(get_db)):
-    return await employees_service.get_busy_employees(db)

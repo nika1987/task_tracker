@@ -10,6 +10,7 @@ class Employee(Base):
     name = sqa.Column(sqa.String)
     positions = sqa.Column(sqa.String)
     department = sqa.Column(sqa.String)
+    tasks = relationship("Task", back_populates='employee', lazy='joined')
 
 
 class Task(Base):
@@ -22,7 +23,10 @@ class Task(Base):
     parent_task_id = sqa.Column(sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True)
     #child_task_id = sqa.Column(sqa.Integer, sqa.ForeignKey('tasks.id'))
 
-    employee = relationship("Employee", backref='tasks')
+    employee = relationship("Employee", back_populates='tasks', lazy='joined')
+    child_tasks = relationship(
+        "Task", back_populates='parent_task', lazy='joined',
+    )
     parent_task = relationship(
-        "Task", remote_side='Task.id', backref='child_task',
-        foreign_keys=[parent_task_id])
+        "Task", remote_side='Task.id', back_populates='child_tasks',
+        foreign_keys=[parent_task_id], lazy='joined')

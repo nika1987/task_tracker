@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dao.models import Task, Employee
 
-from services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
+from services.schemas import BaseTaskSchema, TaskCreateUpdateSchema, TaskSchema
 
 
 class TaskService:
@@ -53,12 +53,6 @@ class TaskService:
             await db.execute(query)
             await db.commit()
 
-    # async def get_important_tasks(self):
-    # unassigned_tasks = await self.task_dao.get_unassigned_tasks()
-    # dependent_tasks = await self.task_dao.get_dependent_tasks()
-
-    # Логика поиска подходящих сотрудников
-    # least_loaded_employee = await self.task_dao.find_least_loaded_employee()
-
-    # Возвращает список объектов [{Важная задача, Срок, [ФИО сотрудника]}]
-    # return important_tasks
+    async def get_important_tasks(self, db: AsyncSession):
+        important_tasks = await self.task_dao.get_important_tasks(db)
+        return [TaskSchema.model_validate(task) for task in important_tasks]

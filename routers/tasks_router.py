@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from container import tasks_service
 from services.schemas import TaskCreateUpdateSchema
 from utils import get_db
@@ -20,6 +19,14 @@ async def tasks_list_router(
         db: AsyncSession = Depends(get_db)
 ):
     all_tasks = await tasks_service.get_all_tasks(db)
+    return all_tasks
+
+
+@task_router.get('/important')
+async def important_tasks_list_router(
+        db: AsyncSession = Depends(get_db)
+):
+    all_tasks = await tasks_service.get_important_tasks(db)
     return all_tasks
 
 
@@ -43,5 +50,4 @@ async def update_task_router(
 async def update_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
-    await tasks_service.delete_task(db, task_id
-                                    )
+    await tasks_service.delete_task(db, task_id)

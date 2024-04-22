@@ -1,11 +1,11 @@
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import select, update, delete, func, desc
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from dao.models import Employee, Task
 
-from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema
+from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, EmployeesSchema, TaskSchema
 
 
 class EmployeeService:
@@ -58,30 +58,25 @@ class EmployeeService:
             await db.commit()
 
     async def get_employees_busy(self, db: AsyncSession):
+        # Реализация логики для получения списка сотрудников с активными задачами
         async with db.begin():
-            query = (
-                select(Employee).
-                join(Task).
-                filter(Task.tasks_status == Employee.positions).
-                filter(Task.tasks_status == 'active').
-                options(selectinload(Employee.tasks)).
-                group_by(Employee.id).
-                order_by(func.count(Task.id).desc())
+            query = select((self.model, func.count(self.tasks.id).label('task_count'))).join(self.tasks).filter(
+                self.tasks.status == 'active').group_by(self.model).order_by(
+                desc('task_count')
             )
-            await db.execute(query)
-            await db.commit()
-
-
-    async def find_least_loaded_employee(self, db: AsyncSession):
-        # Поиск наименее загруженного сотрудника
-        async with db.begin():
-            pass
-            query = select(self.model).filter(self.model.positions != 'busy')
             result = await db.execute(query)
-            find_least_loaded_employee = result.scalars().all()
-            return find_least_loaded_employee
+            employees_with_active_tasks = result.scalars().all()
+            return employees_with_active_tasks
 
-    async def find_employee_for_task(self, db: AsyncSession):
-        # Поиск сотрудника для выполнения важной задачи
-        async with db.begin():
-            pass
+    async def get_employees_busy(self, db: AsyncSession):
+        employees_with_active_tasks = await (
+            self.employee_dao.get_employees_busy(db))
+        return [EmployeesSchema.model_validate(employee)
+                for employee in employees_with_active_tasks]
+
+    async def find_least_loaded_employee(
+        self, db: AsyncSession, task: TaskSchema
+    ):
+        # Поиск наименее загруженного сотрудника
+        employee = await self.employee_dao.find_least_loaded_employee(db, task)
+        return EmployeesSchema.model_validate(employee)
