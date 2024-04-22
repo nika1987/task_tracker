@@ -1,7 +1,7 @@
-
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from dao.models import Employee, Task
 
@@ -62,17 +62,23 @@ class EmployeeDao:
             )
             return bool(result.rowcount)
 
-    async def get_busy_employees(self, db: AsyncSession):
+    async def get_employees_busy(self, db: AsyncSession, employee_id):
         async with db.begin():
-            query = select(self.model).filter(self.model.positions == 'busy')
+            query = (
+                select(Employee).
+                join(Task).
+                filter(self.tasks.employee_id == self.model.employees.id).
+                filter(self.tasks.status == 'active').
+                options(selectinload(Employee.tasks)).
+                group_by(Employee.id).  # Добавлено группирование по id сотрудника
+                order_by(func.count(Task.id).desc())  # Исправлено упорядочивание по убыванию количества задач
+            )
             result = await db.execute(query)
-            busy_employees = result.scalars().all()
-            return busy_employees
-
+            employees_with_active_tasks = result.scalars().all()
+            return employees_with_active_tasks
     async def find_least_loaded_employee(self, db: AsyncSession):
         # Поиск наименее загруженного сотрудника
         async with db.begin():
-            pass
             query = select(self.model).filter(self.model.positions != 'busy')
             result = await db.execute(query)
             find_least_loaded_employee = result.scalars().all()
@@ -81,4 +87,5 @@ class EmployeeDao:
     async def find_employee_for_task(self, db: AsyncSession):
         # Поиск сотрудника для выполнения важной задачи
         async with db.begin():
+            pass
             pass

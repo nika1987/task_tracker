@@ -1,6 +1,7 @@
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from dao.models import Employee, Task
 
@@ -56,12 +57,20 @@ class EmployeeService:
             await db.execute(query)
             await db.commit()
 
-    async def get_busy_employees(self, db: AsyncSession):
+    async def get_employees_busy(self, db: AsyncSession):
         async with db.begin():
-            query = select(self.model).filter(self.model.positions == 'busy')
-            result = await db.execute(query)
-            busy_employees = result.scalars().all()
-            return busy_employees
+            query = (
+                select(Employee).
+                join(Task).
+                filter(Task.employee_id == Employee.id).
+                filter(Task.status == 'active').
+                options(selectinload(Employee.tasks)).
+                group_by(Employee.id).
+                order_by(func.count(Task.id).desc())
+            )
+            await db.execute(query)
+            await db.commit()
+
 
     async def find_least_loaded_employee(self, db: AsyncSession):
         # Поиск наименее загруженного сотрудника
