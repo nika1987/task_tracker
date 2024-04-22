@@ -5,6 +5,7 @@ from dao import Base
 
 
 class Employee(Base):
+    """The Employee model to get data from the database"""
     __tablename__ = "employees"
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
     name = sqa.Column(sqa.String)
@@ -14,6 +15,7 @@ class Employee(Base):
 
 
 class Task(Base):
+    """The Task model to get data from the database"""
     __tablename__ = "tasks"
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
     title = sqa.Column(sqa.String)

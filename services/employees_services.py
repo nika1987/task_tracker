@@ -17,6 +17,7 @@ class EmployeeService:
         self.tasks = Task
 
     async def get_all_employees(self, db: AsyncSession):
+        """This method retrieves all employees from the database"""
         async with db.begin():
             query = select(self.model)
             result = await db.execute(query)
@@ -24,11 +25,7 @@ class EmployeeService:
             return employees
 
     async def create_employee(self, db: AsyncSession, employee_data: BaseEmployeeSchema):
-        """This method creates a new employee record in the database
-        :param db: an instance of the AsyncSession provides a connection to the database
-        :param employee_data: an instance of BaseEmployeesSchema containing data for the new employee
-        :return: True if the employee was successfully created, False otherwise
-        """
+        """This method creates a new employee record in the database"""
         new_employee = employee_data.dict()
 
         async with db.begin():
@@ -37,6 +34,7 @@ class EmployeeService:
         await db.commit()
 
     async def get_employee(self, db: AsyncSession, employee_id):
+        """ This method retrieves a specific employee from the database based on their ID"""
         async with db.begin():
             query = select(self.model).filter(Employee.id == employee_id)
             result = await db.execute(query)
@@ -44,6 +42,7 @@ class EmployeeService:
             return employees
 
     async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeCreateUpdateSchema):
+        """ This method updates an existing employee record in the database"""
         # Реализация логики для обновления информации о сотруднике
         async with db.begin():
             query = update(self.model).where(self.model.id == employee_id).values(employees_data.dict())
@@ -51,6 +50,7 @@ class EmployeeService:
             await db.commit()
 
     async def delete_employee(self, db: AsyncSession, employee_id):
+        """ This method deletes an employee record from the database"""
         # Реализация логики для удаления сотрудника
         async with db.begin():
             query = delete(self.model).where(self.model.id == employee_id)
@@ -58,6 +58,7 @@ class EmployeeService:
             await db.commit()
 
     async def get_employees_busy(self, db: AsyncSession):
+        """ This method retrieves a list of employees with active tasks"""
         # Реализация логики для получения списка сотрудников с активными задачами
         async with db.begin():
             query = select((self.model, func.count(self.tasks.id).label('task_count'))).join(self.tasks).filter(
@@ -69,6 +70,7 @@ class EmployeeService:
             return employees_with_active_tasks
 
     async def get_employees_busy(self, db: AsyncSession):
+        """ This method retrieves a list of employees with active tasks"""
         employees_with_active_tasks = await (
             self.employee_dao.get_employees_busy(db))
         return [EmployeesSchema.model_validate(employee)
@@ -77,6 +79,6 @@ class EmployeeService:
     async def find_least_loaded_employee(
         self, db: AsyncSession, task: TaskSchema
     ):
-        # Поиск наименее загруженного сотрудника
+        """ This method retrieves the employee with the least loaded tasks"""
         employee = await self.employee_dao.find_least_loaded_employee(db, task)
         return EmployeesSchema.model_validate(employee)
