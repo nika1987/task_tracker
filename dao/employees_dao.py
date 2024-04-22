@@ -62,7 +62,7 @@ class EmployeeDao:
             )
             return bool(result.rowcount)
 
-    async def get_employees_busy(self, db: AsyncSession, employee_id):
+    async def get_employees_busy(self, db: AsyncSession):
         async with db.begin():
             query = (
                 select(Employee).
@@ -76,6 +76,7 @@ class EmployeeDao:
             result = await db.execute(query)
             employees_with_active_tasks = result.scalars().all()
             return employees_with_active_tasks
+
     async def find_least_loaded_employee(self, db: AsyncSession):
         # Поиск наименее загруженного сотрудника
         async with db.begin():
