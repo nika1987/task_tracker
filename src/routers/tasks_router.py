@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from container import tasks_service
-from services.schemas import TaskCreateUpdateSchema
-from utils import get_db
+from src.container import tasks_service
+from src.services.schemas import TaskCreateUpdateSchema
+from src.utils import get_db
 
 task_router = APIRouter(tags=['tasks'], prefix='/tasks')
 

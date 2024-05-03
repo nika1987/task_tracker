@@ -2,9 +2,10 @@ from pydantic import ValidationError
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dao.models import Task, Employee
+from src.dao.employees_dao import Employee
+from src.dao.tasks_dao import Task
 
-from services.schemas import BaseTaskSchema, TaskCreateUpdateSchema, TaskSchema
+from src.services.schemas import BaseTaskSchema, TaskCreateUpdateSchema, TaskSchema
 
 
 class TaskService:

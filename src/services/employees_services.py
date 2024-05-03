@@ -1,11 +1,10 @@
 from sqlalchemy import select, update, delete, func, desc
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from dao.models import Employee, Task
+from src.dao.employees_dao import Employee, Task
 
-from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, EmployeesSchema, TaskSchema
+from src.services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, EmployeesSchema, TaskSchema
 
 
 class EmployeeService:

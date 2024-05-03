@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from container import employees_service, tasks_service
+from src.container import employees_service, tasks_service
 
-from services.schemas import EmployeeCreateUpdateSchema
-from utils import get_db
+from src.services.schemas import EmployeeCreateUpdateSchema
+from src.utils import get_db
 
 employee_router = APIRouter(tags=['employees'], prefix='/employees')
 

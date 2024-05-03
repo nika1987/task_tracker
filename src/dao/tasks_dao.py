@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dao.models import Task
+from src.dao.models import Task
 
-from services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
+from src.services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
 
 
 class TaskDAO:

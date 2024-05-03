@@ -1,7 +1,7 @@
 import sqlalchemy as sqa
 
 from sqlalchemy.orm import relationship
-from dao import Base
+from src.dao import Base
 
 
 class Employee(Base):

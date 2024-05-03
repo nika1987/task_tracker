@@ -4,9 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.sql.functions import count
 
-from dao.models import Employee, Task
+from src.dao.models import Employee, Task
 
-from services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, EmployeesSchema, TaskSchema
+from src.services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, TaskSchema
 
 
 class EmployeeDao:
@@ -84,7 +84,7 @@ class EmployeeDao:
 
         async with db.begin():
             free_employee_query = select(self.model).filter(
-                self.model.tasks == None
+                self.model.tasks is None
             )
             result = await db.execute(free_employee_query)
             free_employee = result.unique().scalars().first()
