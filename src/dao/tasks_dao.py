@@ -36,7 +36,9 @@ class TaskDAO:
             task = result.scalars().first()
             return task
 
-    async def update_task(self, task_id, db: AsyncSession, updated_data: TaskCreateUpdateSchema):
+    async def update_task(
+            self, task_id, db: AsyncSession,
+            updated_data: TaskCreateUpdateSchema):
         """Update task from the database"""
         async with db.begin():
             result = await db.execute(
@@ -60,7 +62,8 @@ class TaskDAO:
             query = select(
                 self.model).filter(
                 self.model.status != 'active',
-                self.model.parent_task_id != None, self.model.parent_task.has(
+                self.model.parent_task_id is not None,
+                self.model.parent_task.has(
                     self.model.status == 'active'
                 )
             )

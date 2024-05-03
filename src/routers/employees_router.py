@@ -59,7 +59,7 @@ async def update_employee_router(
 
 
 @employee_router.delete('/delete')
-async def update_employee_router(
+async def delete_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
     await employees_service.delete_employee(db, employee_id)

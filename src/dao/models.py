@@ -21,9 +21,10 @@ class Task(Base):
     title = sqa.Column(sqa.String)
     description = sqa.Column(sqa.String)
     status = sqa.Column(sqa.String)
-    employee_id = sqa.Column(sqa.Integer, sqa.ForeignKey('employees.id'), nullable=True)
-    parent_task_id = sqa.Column(sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True)
-    #child_task_id = sqa.Column(sqa.Integer, sqa.ForeignKey('tasks.id'))
+    employee_id = sqa.Column(
+        sqa.Integer, sqa.ForeignKey('employees.id'), nullable=True)
+    parent_task_id = sqa.Column(
+        sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True)
 
     employee = relationship("Employee", back_populates='tasks', lazy='joined')
     child_tasks = relationship(

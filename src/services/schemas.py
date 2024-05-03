@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from sqlalchemy.dialects.postgresql import Any
 
 
 class BaseEmployeeSchema(BaseModel):

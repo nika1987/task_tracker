@@ -6,7 +6,8 @@ from sqlalchemy.sql.functions import count
 
 from src.dao.models import Employee, Task
 
-from src.services.schemas import BaseEmployeeSchema, EmployeeCreateUpdateSchema, TaskSchema
+from ..services.schemas import (
+    BaseEmployeeSchema, EmployeeCreateUpdateSchema, TaskSchema)
 
 
 class EmployeeDao:
@@ -25,7 +26,8 @@ class EmployeeDao:
             employees = result.scalars().all()
             return employees
 
-    async def create_employee(self, db: AsyncSession, employee_data: BaseEmployeeSchema):
+    async def create_employee(
+            self, db: AsyncSession, employee_data: BaseEmployeeSchema):
         """Create a new employee record in the database"""
         new_employee = employee_data.dict()
 
@@ -43,7 +45,9 @@ class EmployeeDao:
             employee = result.scalars().first()
             return employee
 
-    async def update_employee(self, db: AsyncSession, employee_id, employees_data: EmployeeCreateUpdateSchema):
+    async def update_employee(
+            self, db: AsyncSession, employee_id,
+            employees_data: EmployeeCreateUpdateSchema):
         """Update an existing employee record in the database."""
         async with db.begin():
             result = await db.execute(

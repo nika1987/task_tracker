@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.dao.employees_dao import Employee
 from src.dao.tasks_dao import Task
 
-from src.services.schemas import BaseTaskSchema, TaskCreateUpdateSchema, TaskSchema
+from src.services.schemas import (BaseTaskSchema,
+                                  TaskCreateUpdateSchema, TaskSchema)
 
 
 class TaskService:
@@ -38,17 +39,23 @@ class TaskService:
             print(f"Ошибка валидации данных: {e}")
 
     async def get_task(self, db: AsyncSession, task_id):
-        """ This method retrieves a specific task from the database based on their ID"""
+        """ This method retrieves a specific task
+        from the database based on their ID"""
         async with db.begin():
             query = select(self.model).filter(Task.id == task_id)
             result = await db.execute(query)
             task = result.scalars().first()
             return task
 
-    async def update_task(self, db: AsyncSession, task_id, task_data: TaskCreateUpdateSchema):
-        """ This method updates an existing task record in the database"""
+    async def update_task(
+            self, db: AsyncSession, task_id,
+            task_data: TaskCreateUpdateSchema):
+        """ This method updates an existing task
+        record in the database"""
         async with db.begin():
-            query = update(self.model).where(self.model.id == task_id).values(task_data.dict())
+            query = update(
+                self.model).where(
+                self.model.id == task_id).values(task_data.dict())
             await db.execute(query)
             await db.commit()
 

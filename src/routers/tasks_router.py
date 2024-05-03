@@ -47,7 +47,7 @@ async def update_task_router(
 
 
 @task_router.delete('/delete')
-async def update_task_router(
+async def delete_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
     await tasks_service.delete_task(db, task_id)
