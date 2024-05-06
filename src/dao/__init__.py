@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 
 engine = create_async_engine(DB_URI)
 
-SessionLocal: sessionmaker = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False)
+SessionLocal: sessionmaker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()

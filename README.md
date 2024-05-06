@@ -1,18 +1,22 @@
-#Task Tracker Server
-
 ## Description
 This is a server application built with FastAPI for managing a Postgres database representing a task tracker. The application allows for managing data about employees and tasks, as well as finding the least busy employees for new tasks.
 
 ## Installation
-1. Install dependencies:
-pip install fastapi
-pip install uvicorn
-pip install psycopg2
+README for Flask API:
 
-2. Create a Postgres database and import the schema from the schema.sql file.
+# Project Setup
 
-3. Run the server:
-uvicorn main:app –reload
+1. Install all necessary dependencies by running the command:
+      pip install -r requirements.txt
+2. Create an environment variables file named .env and specify the required environment variables.
+3. Start Docker Compose to run the database and other services:
+      docker-compose up
+4. Create a database migration using Alembic:
+      alembic revision –autogenerate -m "Migration Name"
+   alembic upgrade head
+5. Run the server:
+alembic upgrade head
+
 
 ## Technologies used in the project:
 

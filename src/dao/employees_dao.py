@@ -1,5 +1,6 @@
-from sqlalchemy import select, func, desc, asc
+from typing import Any, Sequence
 
+from sqlalchemy import select, func, desc, asc, Row, RowMapping
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.sql.functions import count
@@ -65,7 +66,7 @@ class EmployeeDao:
             )
             return bool(result.rowcount)
 
-    async def get_employees_busy(self, db: AsyncSession) -> list:
+    async def get_employees_busy(self, db: AsyncSession) -> Sequence[Row[Any] | RowMapping | Any]:
         """Retrieve employees with active tasks from the database """
         async with (db.begin()):
             query = select(

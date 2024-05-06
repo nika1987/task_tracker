@@ -61,7 +61,7 @@ class TaskDAO:
         async with db.begin():
             query = select(
                 self.model).filter(
-                self.model.status != 'active',
+                self.model.status !='active',
                 self.model.parent_task_id is not None,
                 self.model.parent_task.has(
                     self.model.status == 'active'
