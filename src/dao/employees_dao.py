@@ -78,7 +78,7 @@ class EmployeeDao:
             )
 
             result = await db.execute(query)
-            employees_with_active_tasks = result.scalars().all()
+            employees_with_active_tasks = result.unique().scalars().all()
 
         return employees_with_active_tasks
 

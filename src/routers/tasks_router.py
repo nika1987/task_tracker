@@ -12,6 +12,7 @@ async def create_task_router(
         data: TaskCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
     await tasks_service.create_task(db, data)
+    return "OK"
 
 
 @task_router.get('/list')
@@ -22,7 +23,7 @@ async def tasks_list_router(
     return all_tasks
 
 
-@task_router.get('/important')
+@task_router.get('/important', status_code=200)
 async def important_tasks_list_router(
         db: AsyncSession = Depends(get_db)
 ):

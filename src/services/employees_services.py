@@ -2,7 +2,7 @@ from sqlalchemy import select, update, delete
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.dao.employees_dao import Employee, Task
+from src.dao.employees_dao import Employee, Task, EmployeeDao
 
 from src.services.schemas import (BaseEmployeeSchema,
                                   EmployeeCreateUpdateSchema, EmployeesSchema,
@@ -14,6 +14,8 @@ class EmployeeService:
 
     def __init__(self) -> None:
         """Initialize the EmployeeDao class"""
+
+        self.employee_dao = EmployeeDao()
         self.model = Employee
         self.tasks = Task
 
@@ -64,7 +66,7 @@ class EmployeeService:
             await db.commit()
 
     async def get_employees_busy(self, db: AsyncSession):
-        """ This method retrieves a list of employees with active tasks"""
+        """ This method retrieves all employees with active tasks"""
         employees_with_active_tasks = await (
             self.employee_dao.get_employees_busy(db))
         return [EmployeesSchema.model_validate(employee)
@@ -74,5 +76,5 @@ class EmployeeService:
             self, db: AsyncSession, task: TaskSchema
     ):
         """ This method retrieves the employee with the least loaded tasks"""
-        employee = await self.employee_dao.find_least_loaded_employee(db, task)
+        employee = await self.model.employees_dao.find_least_loaded_employee(db, task)
         return EmployeesSchema.model_validate(employee)

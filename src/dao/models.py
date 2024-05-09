@@ -24,7 +24,7 @@ class Task(Base):
     employee_id = sqa.Column(
         sqa.Integer, sqa.ForeignKey('employees.id'), nullable=True)
     parent_task_id = sqa.Column(
-        sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True, default=None)
+        sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True, default=lambda: None)
 
     employee = relationship("Employee", back_populates='tasks', lazy='joined')
     child_tasks = relationship(

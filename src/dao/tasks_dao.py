@@ -8,6 +8,7 @@ from src.services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
 
 class TaskDAO:
     """Class for working with tasks data in the database"""
+
     def __init__(self):
         self.model = Task
 
@@ -58,16 +59,21 @@ class TaskDAO:
 
     async def get_important_tasks(self, db: AsyncSession):
         """Retrieve important tasks from the database"""
-        async with db.begin():
-            query = select(
-                self.model).filter(
-                self.model.status !='active',
-                self.model.parent_task_id is not None,
-                self.model.parent_task.has(
-                    self.model.status == 'active'
+        try:
+            async with db.begin():
+                query = select(
+                    self.model).filter(
+                    self.model.status != 'active',
+                    self.model.parent_task_id is not None,
+                    self.model.parent_task.has(
+                        self.model.status == 'active'
+                    )
                 )
-            )
 
             result = await db.execute(query)
             important_tasks = result.unique().scalars().all()
             return important_tasks
+        except Exception as e:
+            # Обработка ошибки 500 здесь
+            print(f"Произошла ошибка 500: {e}")
+            return None  # Или выполните другие действия по обработке ошибки

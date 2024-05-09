@@ -25,12 +25,12 @@ async def employees_list_router(
     return all_employees
 
 
-@employee_router.get('/busy')
+@employee_router.get('/busy', status_code=200)
 async def get_busy_employees(db: AsyncSession = Depends(get_db)):
     return await employees_service.get_employees_busy(db)
 
 
-@employee_router.get('/free')
+@employee_router.get('/free', status_code=200)
 async def get_free_employees(db: AsyncSession = Depends(get_db)):
     important_tasks = await tasks_service.get_important_tasks(db)
     less_busy_employees = []

@@ -3,7 +3,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.dao.employees_dao import Employee
-from src.dao.tasks_dao import Task
+from src.dao.tasks_dao import Task, TaskDAO
 
 from src.services.schemas import (BaseTaskSchema,
                                   TaskCreateUpdateSchema, TaskSchema)
@@ -15,6 +15,7 @@ class TaskService:
     def __init__(self) -> None:
         """Initialize the TaskDao class"""
 
+        self.task_dao = TaskDAO()
         self.model = Task
         self.employees = Employee
 
@@ -23,7 +24,7 @@ class TaskService:
         async with db.begin():
             query = select(self.model)
             result = await db.execute(query)
-            tasks = result.scalars().all()
+            tasks = result.unique().scalars().all()
             return tasks
 
     async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
@@ -67,6 +68,6 @@ class TaskService:
             await db.commit()
 
     async def get_important_tasks(self, db: AsyncSession):
-        """ This method retrieves important tasks from the database"""
+        """This method retrieves all important tasks from the database"""
         important_tasks = await self.task_dao.get_important_tasks(db)
         return [TaskSchema.model_validate(task) for task in important_tasks]
