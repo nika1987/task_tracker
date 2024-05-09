@@ -22,7 +22,7 @@ class EmployeeService:
         async with db.begin():
             query = select(self.model)
             result = await db.execute(query)
-            employees = result.scalars().all()
+            employees = result.unique().scalars().all()
             return employees
 
     async def create_employee(

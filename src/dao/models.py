@@ -8,7 +8,7 @@ class Employee(Base):
     """The Employee model to get data from the database"""
     __tablename__ = "employees"
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
-    name = sqa.Column(sqa.String)
+    name = sqa.Column(sqa.String, unique=True)
     positions = sqa.Column(sqa.String)
     department = sqa.Column(sqa.String)
     tasks = relationship("Task", back_populates='employee', lazy='joined')
@@ -24,7 +24,7 @@ class Task(Base):
     employee_id = sqa.Column(
         sqa.Integer, sqa.ForeignKey('employees.id'), nullable=True)
     parent_task_id = sqa.Column(
-        sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True)
+        sqa.Integer, sqa.ForeignKey('tasks.id'), nullable=True, default=None)
 
     employee = relationship("Employee", back_populates='tasks', lazy='joined')
     child_tasks = relationship(

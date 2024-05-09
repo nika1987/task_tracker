@@ -1,8 +1,8 @@
-"""create db
+"""alembic
 
-Revision ID: 7ee085a3916c
+Revision ID: 1c994980f6ff
 Revises: 
-Create Date: 2024-05-06 00:26:43.043283
+Create Date: 2024-05-09 22:05:48.350448
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision: str = '7ee085a3916c'
+revision: str = '1c994980f6ff'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,8 @@ def upgrade() -> None:
                     sa.Column('name', sa.String(), nullable=True),
                     sa.Column('positions', sa.String(), nullable=True),
                     sa.Column('department', sa.String(), nullable=True),
-                    sa.PrimaryKeyConstraint('id')
+                    sa.PrimaryKeyConstraint('id'),
+                    sa.UniqueConstraint('name')
                     )
     op.create_table('tasks',
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),

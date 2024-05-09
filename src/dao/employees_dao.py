@@ -7,7 +7,7 @@ from sqlalchemy.sql.functions import count
 
 from src.dao.models import Employee, Task
 
-from ..services.schemas import (
+from src.services.schemas import (
     BaseEmployeeSchema, EmployeeCreateUpdateSchema, TaskSchema)
 
 

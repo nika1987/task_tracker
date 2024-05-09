@@ -9,11 +9,12 @@ from src.utils import get_db
 employee_router = APIRouter(tags=['employees'], prefix='/employees')
 
 
-@employee_router.post('/create')
+@employee_router.post('/create', status_code=201)
 async def create_employee_router(
         data: EmployeeCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
     await employees_service.create_employee(db, data)
+    return "OK"
 
 
 @employee_router.get('/list')
@@ -49,17 +50,19 @@ async def single_employee_router(
     return await employees_service.get_employee(db, employee_id)
 
 
-@employee_router.put('/update')
+@employee_router.put('/update', status_code=204)
 async def update_employee_router(
         employee_id: int,
         data: EmployeeCreateUpdateSchema,
         db: AsyncSession = Depends(get_db)
 ):
     await employees_service.update_employee(db, employee_id, data)
+    return "OK"
 
 
-@employee_router.delete('/delete')
+@employee_router.delete('/delete', status_code=204)
 async def delete_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
     await employees_service.delete_employee(db, employee_id)
+    return "OK"

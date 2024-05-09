@@ -7,7 +7,7 @@ from src.utils import get_db
 task_router = APIRouter(tags=['tasks'], prefix='/tasks')
 
 
-@task_router.post('/create')
+@task_router.post('/create', status_code=201)
 async def create_task_router(
         data: TaskCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
@@ -37,17 +37,19 @@ async def single_task_router(
     return await tasks_service.get_task(db, task_id)
 
 
-@task_router.put('/update')
+@task_router.put('/update', status_code=204)
 async def update_task_router(
         task_id: int,
         data: TaskCreateUpdateSchema,
         db: AsyncSession = Depends(get_db)
 ):
     await tasks_service.update_task(db, task_id, data)
+    return "OK"
 
 
-@task_router.delete('/delete')
+@task_router.delete('/delete', status_code=204)
 async def delete_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
     await tasks_service.delete_task(db, task_id)
+    return "OK"
