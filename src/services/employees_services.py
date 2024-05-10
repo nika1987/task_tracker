@@ -44,8 +44,8 @@ class EmployeeService:
         async with db.begin():
             query = select(self.model).filter(Employee.id == employee_id)
             result = await db.execute(query)
-            employees = result.scalars().all()
-            return employees
+            employee = result.unique().scalars().first()
+            return employee
 
     async def update_employee(
             self, db: AsyncSession, employee_id,
@@ -69,8 +69,11 @@ class EmployeeService:
         """ This method retrieves all employees with active tasks"""
         employees_with_active_tasks = await (
             self.employee_dao.get_employees_busy(db))
-        return [EmployeesSchema.model_validate(employee)
-                for employee in employees_with_active_tasks]
+        logged_employees = []
+        for employee in employees_with_active_tasks:
+            logged_employee = EmployeesSchema.model_validate(employee)
+            logged_employees.append(logged_employee)
+        return logged_employees
 
     async def find_least_loaded_employee(
             self, db: AsyncSession, task: TaskSchema

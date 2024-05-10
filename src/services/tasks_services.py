@@ -45,7 +45,7 @@ class TaskService:
         async with db.begin():
             query = select(self.model).filter(Task.id == task_id)
             result = await db.execute(query)
-            task = result.scalars().first()
+            task = result.unique().scalars().first()
             return task
 
     async def update_task(
@@ -61,7 +61,7 @@ class TaskService:
             await db.commit()
 
     async def delete_task(self, db: AsyncSession, task_id):
-        """ This method deletes an task record from the database"""
+        """ This method deletes a task record from the database"""
         async with db.begin():
             query = delete(self.model).where(self.model.id == task_id)
             await db.execute(query)
