@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+from typing import ForwardRef
+from pydantic import BaseModel, Field
+
+
+TaskRef = ForwardRef('BaseTaskSchema')
 
 
 class BaseEmployeeSchema(BaseModel):
@@ -8,7 +12,7 @@ class BaseEmployeeSchema(BaseModel):
     department: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BaseTaskSchema(BaseModel):
@@ -16,11 +20,12 @@ class BaseTaskSchema(BaseModel):
     title: str
     description: str
     status: str
-    employee_id: int
-    parent_task_id: None = None
+    urgency: int = Field(0, ge=1, le=5)
+    employee_id: int | None = None
+    parent_task_id: int | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class EmployeesSchema(BaseEmployeeSchema):
@@ -32,6 +37,13 @@ class EmployeeCreateUpdateSchema(BaseEmployeeSchema):
     """ The base schema with additional methods"""
 
 
+class EmployeeUpdateSchema(BaseEmployeeSchema):
+    """ The base schema with additional methods"""
+    name: str | None = None
+    positions: str | None = None
+    department: str | None = None
+
+
 class TaskSchema(BaseTaskSchema):
     """This schema used as serializer to get a list of tasks"""
     id: int
@@ -39,3 +51,10 @@ class TaskSchema(BaseTaskSchema):
 
 class TaskCreateUpdateSchema(BaseTaskSchema):
     """ The base schema with additional methods"""
+
+
+class TaskUpdateSchema(BaseTaskSchema):
+    """ The base schema with additional methods"""
+    title: str | None = None
+    description: str | None = None
+    status: str | None = None

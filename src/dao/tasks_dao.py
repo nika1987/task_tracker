@@ -1,9 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import select, insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.dao.models import Task
-
-from src.services.schemas import BaseTaskSchema, TaskCreateUpdateSchema
+from src.services.schemas import BaseTaskSchema, TaskUpdateSchema
 
 
 class TaskDAO:
@@ -17,7 +15,7 @@ class TaskDAO:
         async with db.begin():
             query = select(self.model)
             result = await db.execute(query)
-            tasks = result.scalars().all()
+            tasks = result.unique().scalars().all()
             return tasks
 
     async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
@@ -25,37 +23,37 @@ class TaskDAO:
         new_task = task_data.dict()
         async with db.begin():
             result = await db.execute(
-                self.model.table.insert().values(new_task)
+                insert(self.model).values(new_task)
             )
-            return bool(result.rowcount)
+            await db.commit()
+        return await self.get_task(db, result.inserted_primary_key[0])
 
     async def get_task(self, db: AsyncSession, task_id):
         """Retrieve task from the database"""
         async with db.begin():
             query = select(self.model).filter(Task.id == task_id)
             result = await db.execute(query)
-            task = result.scalars().first()
+            task = result.unique().scalars().first()
             return task
 
     async def update_task(
-            self, task_id, db: AsyncSession,
-            updated_data: TaskCreateUpdateSchema):
+            self, task_id, db: AsyncSession, updated_data: TaskUpdateSchema):
         """Update task from the database"""
         async with db.begin():
-            result = await db.execute(
-                self.model.table.update()
-                .where(self.model.id == task_id)
-                .values(updated_data.dict())
-            )
-            return bool(result.rowcount)
+            query = update(
+                self.model).where(
+                self.model.id == task_id).values(
+                updated_data.model_dump(exclude_unset=True))
+            await db.execute(query)
+            await db.commit()
+        return await self.get_task(db, task_id)
 
     async def delete_task(self, task_id, db: AsyncSession, ):
         """Delete task from the database"""
         async with db.begin():
-            result = await db.execute(
-                self.model.table.delete().where(self.model.id == task_id)
-            )
-        return bool(result.rowcount)
+            query = delete(self.model).where(self.model.id == task_id)
+            await db.execute(query)
+            await db.commit()
 
     async def get_important_tasks(self, db: AsyncSession):
         """Retrieve important tasks from the database"""
@@ -64,6 +62,7 @@ class TaskDAO:
                 query = select(
                     self.model).filter(
                     self.model.status != 'active',
+                    self.model.urgency >= 4,
                     self.model.parent_task_id is not None,
                     self.model.parent_task.has(
                         self.model.status == 'active'
@@ -76,4 +75,4 @@ class TaskDAO:
         except Exception as e:
             # Обработка ошибки 500 здесь
             print(f"Произошла ошибка 500: {e}")
-            return None  # Или выполните другие действия по обработке ошибки
+            return []  # Или выполните другие действия по обработке ошибки
