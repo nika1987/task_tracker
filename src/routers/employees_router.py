@@ -90,4 +90,15 @@ async def update_employee_router(
 async def delete_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
-    return await employees_service.delete_employee(db, employee_id)
+    try:
+        result = await employees_service.delete_employee(db, employee_id)
+        if result:
+            return result
+        else:
+            return JSONResponse(
+                status_code=400, content={'message': 'Работника с указанным ID не существует'}
+            )
+    except IntegrityError:
+        raise HTTPException(
+            status_code=400, detail="Работник не может быть удален"
+        )

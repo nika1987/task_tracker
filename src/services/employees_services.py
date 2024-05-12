@@ -57,12 +57,8 @@ class EmployeeService:
 
     async def delete_employee(self, db: AsyncSession, employee_id):
         """ This method deletes an employee record from the database"""
-        try:
-            return await self.employee_dao.delete_employee(db, employee_id)
-        except Exception as e:
-            raise HTTPException(
-                status_code=400, detail=f'Can not delete employee: {e}'
-            )
+
+        return await self.employee_dao.delete_employee(db, employee_id)
 
     async def get_employees_busy(self, db: AsyncSession):
         """ This method retrieves all employees with active tasks"""
