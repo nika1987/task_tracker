@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.container import tasks_service
-from src.services.schemas import TaskCreateUpdateSchema
+from src.services.schemas import TaskCreateUpdateSchema, TaskUpdateSchema
 from src.utils import get_db
 
 task_router = APIRouter(tags=['tasks'], prefix='/tasks')
@@ -11,8 +11,7 @@ task_router = APIRouter(tags=['tasks'], prefix='/tasks')
 async def create_task_router(
         data: TaskCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
-    await tasks_service.create_task(db, data)
-    return "OK"
+    return await tasks_service.create_task(db, data)
 
 
 @task_router.get('/list')
@@ -20,6 +19,8 @@ async def tasks_list_router(
         db: AsyncSession = Depends(get_db)
 ):
     all_tasks = await tasks_service.get_all_tasks(db)
+    if not all_tasks:
+        raise HTTPException(status_code=404, detail="Tasks not found")
     return all_tasks
 
 
@@ -27,30 +28,37 @@ async def tasks_list_router(
 async def important_tasks_list_router(
         db: AsyncSession = Depends(get_db)
 ):
-    all_tasks = await tasks_service.get_important_tasks(db)
-    return all_tasks
+    important_tasks = await tasks_service.get_important_tasks(db)
+    if not important_tasks:
+        raise HTTPException(
+            status_code=404,
+            detail="You have no important tasks"
+        )
+    return important_tasks
 
 
 @task_router.get('/{task_id}')
 async def single_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
-    return await tasks_service.get_task(db, task_id)
+    task = await tasks_service.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return task
 
 
-@task_router.put('/update', status_code=204)
+@task_router.put('/update', status_code=200)
 async def update_task_router(
         task_id: int,
-        data: TaskCreateUpdateSchema,
+        data: TaskUpdateSchema,
         db: AsyncSession = Depends(get_db)
 ):
-    await tasks_service.update_task(db, task_id, data)
-    return "OK"
+    return await tasks_service.update_task(db, task_id, data)
 
 
 @task_router.delete('/delete', status_code=204)
 async def delete_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
-    await tasks_service.delete_task(db, task_id)
-    return "OK"
+    return await tasks_service.delete_task(db, task_id)

@@ -8,4 +8,4 @@ async def get_db() -> AsyncSession:
     : return: AsyncSession instance
     """
     async with SessionLocal() as db:
-        return db
+        yield db

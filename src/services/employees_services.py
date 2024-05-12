@@ -1,12 +1,8 @@
-from sqlalchemy import select, update, delete
-
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from src.dao.employees_dao import Employee, Task, EmployeeDao
-
-from src.services.schemas import (BaseEmployeeSchema,
-                                  EmployeeCreateUpdateSchema, EmployeesSchema,
-                                  TaskSchema)
+from src.services.schemas import (
+    BaseEmployeeSchema, TaskSchema, EmployeeUpdateSchema)
 
 
 class EmployeeService:
@@ -21,63 +17,65 @@ class EmployeeService:
 
     async def get_all_employees(self, db: AsyncSession):
         """This method retrieves all employees from the database"""
-        async with db.begin():
-            query = select(self.model)
-            result = await db.execute(query)
-            employees = result.unique().scalars().all()
+        try:
+            employees = await self.employee_dao.get_all_employees(db)
             return employees
+        except Exception as e:
+            print(f'Can not get employees: {e}')
+            return []
 
     async def create_employee(
             self, db: AsyncSession,
             employee_data: BaseEmployeeSchema):
         """This method creates a new employee record in the database"""
-        new_employee = employee_data.dict()
-
-        async with db.begin():
-            db.add(self.model(**new_employee))
-
-        await db.commit()
+        try:
+            created_employee = await self.employee_dao.create_employee(
+                db, employee_data)
+            return created_employee
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f'Can not create employee: {e}')
 
     async def get_employee(self, db: AsyncSession, employee_id):
         """ This method retrieves a specific employee
         from the database based on their ID"""
-        async with db.begin():
-            query = select(self.model).filter(Employee.id == employee_id)
-            result = await db.execute(query)
-            employee = result.unique().scalars().first()
-            return employee
+        try:
+            return await self.employee_dao.get_employee(db, employee_id)
+        except Exception as e:
+            print(f'Can not get employee: {e}')
+            return None
 
     async def update_employee(
             self, db: AsyncSession, employee_id,
-            employees_data: EmployeeCreateUpdateSchema):
+            employees_data: EmployeeUpdateSchema):
         """ This method updates an existing employee record in the database"""
-        async with db.begin():
-            query = update(
-                self.model).where(
-                self.model.id == employee_id).values(employees_data.dict())
-            await db.execute(query)
-            await db.commit()
+        try:
+            return await self.employee_dao.update_employee(
+                db, employee_id, employees_data
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f'Can not update employee: {e}'
+            )
 
     async def delete_employee(self, db: AsyncSession, employee_id):
         """ This method deletes an employee record from the database"""
-        async with db.begin():
-            query = delete(self.model).where(self.model.id == employee_id)
-            await db.execute(query)
-            await db.commit()
+        try:
+            return await self.employee_dao.delete_employee(db, employee_id)
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f'Can not delete employee: {e}'
+            )
 
     async def get_employees_busy(self, db: AsyncSession):
         """ This method retrieves all employees with active tasks"""
         employees_with_active_tasks = await (
             self.employee_dao.get_employees_busy(db))
-        logged_employees = []
-        for employee in employees_with_active_tasks:
-            logged_employee = EmployeesSchema.model_validate(employee)
-            logged_employees.append(logged_employee)
-        return logged_employees
+        return employees_with_active_tasks
 
     async def find_least_loaded_employee(
             self, db: AsyncSession, task: TaskSchema
     ):
         """ This method retrieves the employee with the least loaded tasks"""
-        employee = await self.model.employees_dao.find_least_loaded_employee(db, task)
-        return EmployeesSchema.model_validate(employee)
+        employee = await self.employee_dao.find_least_loaded_employee(db, task)
+        return employee
