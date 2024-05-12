@@ -28,13 +28,10 @@ class EmployeeService:
             self, db: AsyncSession,
             employee_data: BaseEmployeeSchema):
         """This method creates a new employee record in the database"""
-        try:
-            created_employee = await self.employee_dao.create_employee(
-                db, employee_data)
-            return created_employee
-        except Exception as e:
-            raise HTTPException(
-                status_code=400, detail=f'Can not create employee: {e}')
+
+        created_employee = await self.employee_dao.create_employee(
+            db, employee_data)
+        return created_employee
 
     async def get_employee(self, db: AsyncSession, employee_id):
         """ This method retrieves a specific employee
