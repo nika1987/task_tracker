@@ -7,6 +7,8 @@ from src.services.schemas import (
     EmployeeCreateUpdateSchema,
     EmployeeUpdateSchema)
 from src.utils import get_db
+from sqlalchemy.exc import IntegrityError
+from starlette.responses import JSONResponse
 
 employee_router = APIRouter(tags=['employees'], prefix='/employees')
 
@@ -15,7 +17,12 @@ employee_router = APIRouter(tags=['employees'], prefix='/employees')
 async def create_employee_router(
         data: EmployeeCreateUpdateSchema, db: AsyncSession = Depends(get_db)
 ):
-    return await employees_service.create_employee(db, data)
+    try:
+        return await employees_service.create_employee(db, data)
+    except IntegrityError:
+        return JSONResponse(
+            status_code=400, content={'message': 'Ошибка при создании работника'}
+        )
 
 
 @employee_router.get('/list')
@@ -84,4 +91,3 @@ async def delete_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
     return await employees_service.delete_employee(db, employee_id)
-
