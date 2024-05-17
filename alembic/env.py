@@ -6,7 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
-from task_tracker.src.constans import DB_URI
+from ..src.constans import DB_URI
 from task_tracker.src.dao.models import Base
 
 # this is the Alembic Config object, which provides

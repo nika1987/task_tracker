@@ -1,14 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.container import employees_service, tasks_service
-
-from src.services.schemas import (
-    EmployeeCreateUpdateSchema,
-    EmployeeUpdateSchema)
-from src.utils import get_db
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
+
+from task_tracker.src.container import employees_service, tasks_service
+from task_tracker.src.services.schemas import EmployeeCreateUpdateSchema, EmployeeUpdateSchema
+from task_tracker.src.utils import get_db
 
 employee_router = APIRouter(tags=['employees'], prefix='/employees')
 
