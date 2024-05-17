@@ -1,7 +1,7 @@
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.dao.models import Task
-from src.services.schemas import BaseTaskSchema, TaskUpdateSchema
+from task_tracker.src.dao.models import Task
+from task_tracker.src.services.schemas import BaseTaskSchema, TaskUpdateSchema
 
 
 class TaskDAO:
@@ -21,6 +21,7 @@ class TaskDAO:
     async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
         """Create new task in the database"""
         new_task = task_data.dict()
+        # new_task['status'] = 'created'
         async with db.begin():
             result = await db.execute(
                 insert(self.model).values(new_task)
@@ -73,6 +74,5 @@ class TaskDAO:
             important_tasks = result.unique().scalars().all()
             return important_tasks
         except Exception as e:
-            # Обработка ошибки 500 здесь
             print(f"Произошла ошибка 500: {e}")
-            return []  # Или выполните другие действия по обработке ошибки
+            return []
