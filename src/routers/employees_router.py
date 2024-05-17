@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import JSONResponse
 
 from task_tracker.src.container import employees_service, tasks_service
-from task_tracker.src.services.schemas import EmployeeCreateUpdateSchema, EmployeeUpdateSchema
+
+from task_tracker.src.services.schemas import (
+    EmployeeCreateUpdateSchema,
+    EmployeeUpdateSchema)
 from task_tracker.src.utils import get_db
+from sqlalchemy.exc import IntegrityError
+from starlette.responses import JSONResponse
 
 employee_router = APIRouter(tags=['employees'], prefix='/employees')
 
@@ -36,9 +39,7 @@ async def employees_list_router(
 async def get_busy_employees(db: AsyncSession = Depends(get_db)):
     busy_employees = await employees_service.get_employees_busy(db)
     if not busy_employees:
-        raise HTTPException(
-            status_code=404, detail="You have no busy employees"
-        )
+        return JSONResponse({'detail': "All employees are free"}, 200)
     return busy_employees
 
 
@@ -88,13 +89,11 @@ async def delete_employee_router(
         employee_id: int, db: AsyncSession = Depends(get_db)
 ):
     try:
-        result = await employees_service.delete_employee(db, employee_id)
-        if result:
-            return result
+        found_employee = await employees_service.get_employee(db, employee_id)
+        if not found_employee:
+            raise HTTPException(status_code=404, detail="Работника с указанным ID не существует")
         else:
-            return JSONResponse(
-                status_code=400, content={'message': 'Работника с указанным ID не существует'}
-            )
+            await employees_service.delete_employee(db, employee_id)
     except IntegrityError:
         raise HTTPException(
             status_code=400, detail="Работник не может быть удален"

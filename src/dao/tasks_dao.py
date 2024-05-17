@@ -21,7 +21,6 @@ class TaskDAO:
     async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
         """Create new task in the database"""
         new_task = task_data.dict()
-        # new_task['status'] = 'created'
         async with db.begin():
             result = await db.execute(
                 insert(self.model).values(new_task)
@@ -69,7 +68,6 @@ class TaskDAO:
                         self.model.status == 'active'
                     )
                 )
-
             result = await db.execute(query)
             important_tasks = result.unique().scalars().all()
             return important_tasks

@@ -12,10 +12,11 @@ README for Flask API:
 3. Start Docker Compose to run the database and other services:
       docker-compose up
 4. Create a database migration using Alembic:
-      alembic revision –autogenerate -m "Migration Name"
+      alembic revision --autogenerate -m "Migration Name"
    alembic upgrade head
 5. Run the server:
-alembic upgrade head
+python main.py
+
 
 
 ## Technologies used in the project:

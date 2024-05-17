@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from task_tracker.src.dao.employees_dao import Employee
 from task_tracker.src.dao.tasks_dao import Task, TaskDAO
 from task_tracker.src.services.schemas import (
-    BaseTaskSchema,
+    BaseTaskSchema, TaskCreateUpdateSchema,
     TaskUpdateSchema)
 
 
