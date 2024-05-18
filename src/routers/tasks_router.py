@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from task_tracker.src.container import tasks_service
 from task_tracker.src.services.schemas import TaskCreateUpdateSchema, TaskUpdateSchema
@@ -66,4 +67,11 @@ async def update_task_router(
 async def delete_task_router(
         task_id: int, db: AsyncSession = Depends(get_db)
 ):
-    return await tasks_service.delete_task(db, task_id)
+    try:
+        found_task = await tasks_service.get_task(db, task_id)
+        if not found_task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        else:
+            await tasks_service.delete_task(db, task_id)
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="Can not delete task")

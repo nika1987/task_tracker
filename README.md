@@ -12,7 +12,7 @@ README for Flask API:
 3. Start Docker Compose to run the database and other services:
       docker-compose up
 4. Create a database migration using Alembic:
-      alembic revision --autogenerate -m "Migration Name"
+      API кликапа, одно из которых я работаю, и тут например при обновлении статус код 200 приходит и ничего, никто не жалуется, а это довольно крупный коммерческий проект, а не какое-то домашнее задание
 5. Run the server:
  uvicorn main:app --reload
 

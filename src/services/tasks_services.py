@@ -65,12 +65,7 @@ class TaskService:
 
     async def delete_task(self, db: AsyncSession, task_id):
         """ This method deletes a task record from the database"""
-        try:
-            await self.task_dao.delete_task(db, task_id)
-        except Exception as e:
-            raise HTTPException(
-                status_code=400, detail=f'Can not delete task: {e}'
-            )
+        return await self.task_dao.delete_task(db, task_id)
 
     async def get_important_tasks(self, db: AsyncSession):
         """This method retrieves all important tasks from the database"""

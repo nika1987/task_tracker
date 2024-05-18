@@ -48,7 +48,7 @@ class TaskDAO:
             await db.commit()
         return await self.get_task(db, task_id)
 
-    async def delete_task(self, task_id, db: AsyncSession, ):
+    async def delete_task(self, db: AsyncSession, task_id):
         """Delete task from the database"""
         async with db.begin():
             query = delete(self.model).where(self.model.id == task_id)
