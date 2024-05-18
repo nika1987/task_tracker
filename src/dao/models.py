@@ -1,7 +1,7 @@
 import sqlalchemy as sqa
 
 from sqlalchemy.orm import relationship
-from src.dao import Base
+from task_tracker.src.dao import Base
 
 
 class Employee(Base):
