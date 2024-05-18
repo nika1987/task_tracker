@@ -74,7 +74,12 @@ async def update_employee_router(
         employee_id: int, data: EmployeeUpdateSchema,
         db: AsyncSession = Depends(get_db)
 ):
-    return await employees_service.update_employee(db, employee_id, data)
+    updated_employee = await employees_service.update_employee(db, employee_id, data)
+
+    if updated_employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    return updated_employee
 
 
 @employee_router.delete('/delete', status_code=204)
