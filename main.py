@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.routers import employees_router, tasks_router
+from task_tracker.src.routers import employees_router, tasks_router
 
 app: FastAPI = FastAPI()
 
