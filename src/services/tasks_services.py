@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from task_tracker.src.dao.employees_dao import Employee
 from task_tracker.src.dao.tasks_dao import Task, TaskDAO
 from task_tracker.src.services.schemas import (
-    BaseTaskSchema, TaskCreateUpdateSchema,
+    BaseTaskSchema,
     TaskUpdateSchema)
 
 
@@ -33,7 +33,6 @@ class TaskService:
             new_task = await self.task_dao.create_task(db, task_data)
             return new_task
         except ValidationError as e:
-            # Если данные не прошли валидацию, обработайте ошибку здесь
             print(f"Ошибка валидации данных: {e}")
             raise HTTPException(
                 status_code=400, detail=f'Can not create task: {e}'
