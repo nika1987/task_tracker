@@ -62,7 +62,7 @@ class TaskDAO:
                 query = select(
                     self.model).filter(
                     self.model.status != 'active',
-                    self.model.urgency >= 4,
+                    #self.model.urgency >= 4,
                     self.model.parent_task_id is not None,
                     self.model.parent_task.has(
                         self.model.status == 'active'
