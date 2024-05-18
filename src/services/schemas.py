@@ -20,7 +20,7 @@ class BaseTaskSchema(BaseModel):
     title: str
     description: str
     status: str
-    urgency: int = Field(0, ge=1, le=5)
+    is_important: bool
     employee_id: int | None = None
     parent_task_id: int | None = None
 

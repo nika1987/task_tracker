@@ -1,7 +1,7 @@
 import sqlalchemy as sqa
 
 from sqlalchemy.orm import relationship
-from task_tracker.src.dao import Base
+from src.dao import Base
 
 
 class Employee(Base):
@@ -21,6 +21,7 @@ class Task(Base):
     title = sqa.Column(sqa.String)
     description = sqa.Column(sqa.String)
     status = sqa.Column(sqa.String)
+    is_important = sqa.Column(sqa.Boolean, default=False)
     employee_id = sqa.Column(
         sqa.Integer, sqa.ForeignKey('employees.id'), nullable=True)
     parent_task_id = sqa.Column(
