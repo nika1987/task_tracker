@@ -47,7 +47,7 @@ async def get_busy_employees(db: AsyncSession = Depends(get_db)):
 async def get_free_employees(db: AsyncSession = Depends(get_db)):
     important_tasks = await tasks_service.get_important_tasks(db)
     if not important_tasks:
-        return []  # Возвращаем пустой список, если нет важных задач
+        return []
 
     less_busy_employees = []
     for task in important_tasks:
