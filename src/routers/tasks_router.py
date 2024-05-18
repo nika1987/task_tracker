@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from task_tracker.src.container import tasks_service
-from task_tracker.src.services.schemas import TaskCreateUpdateSchema, TaskUpdateSchema
-from task_tracker.src.utils import get_db
+from src.container import tasks_service
+from src.services.schemas import TaskCreateUpdateSchema, TaskUpdateSchema
+from src.utils import get_db
 
 task_router = APIRouter(tags=['tasks'], prefix='/tasks')
 

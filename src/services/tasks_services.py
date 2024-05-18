@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
-from task_tracker.src.dao.employees_dao import Employee
-from task_tracker.src.dao.tasks_dao import Task, TaskDAO
-from task_tracker.src.services.schemas import (
+from src.dao.employees_dao import Employee
+from src.dao.tasks_dao import Task, TaskDAO
+from src.services.schemas import (
     BaseTaskSchema,
     TaskUpdateSchema)
 

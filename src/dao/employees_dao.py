@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.sql.functions import count
 
-from task_tracker.src.dao.models import Employee, Task
+from src.dao.models import Employee, Task
 
-from task_tracker.src.services.schemas import (
+from src.services.schemas import (
     BaseEmployeeSchema,  TaskSchema,
     EmployeeUpdateSchema)
 
