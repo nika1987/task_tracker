@@ -13,6 +13,7 @@ README for Flask API:
       docker-compose up
 4. Create a database migration using Alembic:
         alembic revision --autogenerate -m "alembic"
+        alembic upgrade head 
 5. Run the server:
  uvicorn main:app --reload
 
