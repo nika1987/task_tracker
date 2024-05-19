@@ -1,5 +1,5 @@
 from typing import ForwardRef
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 TaskRef = ForwardRef('BaseTaskSchema')

@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from task_tracker.src.dao.employees_dao import Employee, Task, EmployeeDao
-from task_tracker.src.services.schemas import (
+from src.dao.employees_dao import Employee, Task, EmployeeDao
+from src.services.schemas import (
     BaseEmployeeSchema, TaskSchema, EmployeeUpdateSchema)
 
 
@@ -25,12 +25,11 @@ class EmployeeService:
             return []
 
     async def create_employee(
-            self, db: AsyncSession,
-            employee_data: BaseEmployeeSchema):
-        """This method creates a new employee record in the database"""
-
+            self, db: AsyncSession, employee_data: BaseEmployeeSchema):
+        """Create a new employee record in the database"""
         created_employee = await self.employee_dao.create_employee(
-            db, employee_data)
+            db, employee_data
+        )
         return created_employee
 
     async def get_employee(self, db: AsyncSession, employee_id):

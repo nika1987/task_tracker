@@ -19,6 +19,8 @@ class EmployeeDao:
 
     def __init__(self) -> None:
         """Initialize the EmployeeDao class"""
+
+        self.employee_dao = EmployeeDao()
         self.model = Employee
         self.tasks = Task
 

@@ -30,7 +30,7 @@ Docker
 Docker-compose
 
 ## Usage
-1. API documentation is available at http://localhost:8000/docs.
+1. API documentation is available at http://localhost:8004/docs.
 
 ## Author
 Veronika Zolotova
