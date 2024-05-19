@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from task_tracker.src.dao.employees_dao import Employee, Task, EmployeeDao
-from task_tracker.src.services.schemas import (
+from src.dao.employees_dao import Employee, Task, EmployeeDao
+from src.services.schemas import (
     BaseEmployeeSchema, TaskSchema, EmployeeUpdateSchema)
 
 
