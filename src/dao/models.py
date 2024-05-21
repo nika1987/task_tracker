@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as sqa
 
 from sqlalchemy.orm import relationship
@@ -20,6 +22,7 @@ class Task(Base):
     id = sqa.Column(sqa.Integer, primary_key=True, autoincrement=True)
     title = sqa.Column(sqa.String)
     description = sqa.Column(sqa.String)
+    deadline = sqa.Column(sqa.DateTime, default=datetime.now)
     status = sqa.Column(sqa.String)
     is_important = sqa.Column(sqa.Boolean, default=False)
     employee_id = sqa.Column(

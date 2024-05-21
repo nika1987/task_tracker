@@ -21,7 +21,6 @@ class TaskDAO:
     async def create_task(self, db: AsyncSession, task_data: BaseTaskSchema):
         """Create new task in the database"""
         new_task = task_data.dict()
-        new_task['is_important'] = False
         async with db.begin():
             result = await db.execute(
                 insert(self.model).values(new_task)

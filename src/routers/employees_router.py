@@ -47,14 +47,21 @@ async def get_busy_employees(db: AsyncSession = Depends(get_db)):
 async def get_free_employees(db: AsyncSession = Depends(get_db)):
     important_tasks = await tasks_service.get_important_tasks(db)
     if not important_tasks:
-        return []
-
+        raise HTTPException(
+            status_code=404,
+            detail="You have no important tasks to find an employee"
+        )
     less_busy_employees = []
     for task in important_tasks:
-        found_employee = await employees_service.find_least_loaded_employee(db, task)
-        if found_employee:
-            less_busy_employees.append({'task': task, 'employee': found_employee.name})
+        found_employee = await employees_service.find_least_loaded_employee(
+            db, task)
+        less_busy_employees.append(
+            {'task': task, 'employee': found_employee.name})
 
+    if not less_busy_employees:
+        raise HTTPException(
+            status_code=404, detail="You have no free employees"
+        )
     return less_busy_employees
 
 

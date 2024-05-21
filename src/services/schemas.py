@@ -1,4 +1,5 @@
-from typing import ForwardRef
+from datetime import datetime
+from typing import ForwardRef, Optional
 from pydantic import BaseModel
 
 
@@ -20,7 +21,8 @@ class BaseTaskSchema(BaseModel):
     title: str
     description: str
     status: str
-    is_important: bool
+    deadline: Optional[datetime]
+    is_important: bool | None = False
     employee_id: int | None = None
     parent_task_id: int | None = None
 
