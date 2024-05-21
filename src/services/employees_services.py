@@ -27,10 +27,22 @@ class EmployeeService:
     async def create_employee(
             self, db: AsyncSession, employee_data: BaseEmployeeSchema):
         """Create a new employee record in the database"""
-        created_employee = await self.employee_dao.create_employee(
-            db, employee_data
-        )
-        return created_employee
+        try:
+            existing_employee = await self.employee_dao.get_by_name(
+                db, employee_data.name
+            )
+            if existing_employee:
+                raise ValueError(
+                    f'Employee with name {employee_data.name} already exists')
+
+            created_employee = await self.employee_dao.create_employee(
+                db, employee_data
+            )
+            return created_employee
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f'Can not create employee: {e}'
+            )
 
     async def get_employee(self, db: AsyncSession, employee_id):
         """ This method retrieves a specific employee
@@ -46,6 +58,12 @@ class EmployeeService:
             employees_data: EmployeeUpdateSchema):
         """ This method updates an existing employee record in the database"""
         try:
+            existing_employee = await self.employee_dao.get_by_name(
+                db, employees_data.name
+            )
+            if existing_employee and existing_employee.id != employee_id:
+                raise ValueError(
+                    f'Employee with name {employees_data.name} already exists')
             return await self.employee_dao.update_employee(
                 db, employee_id, employees_data
             )

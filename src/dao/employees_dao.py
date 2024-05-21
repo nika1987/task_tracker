@@ -10,7 +10,7 @@ from sqlalchemy.sql.functions import count
 from src.dao.models import Employee, Task
 
 from src.services.schemas import (
-    BaseEmployeeSchema,  TaskSchema,
+    BaseEmployeeSchema, TaskSchema,
     EmployeeUpdateSchema)
 
 
@@ -30,6 +30,14 @@ class EmployeeDao:
             result = await db.execute(query)
             employees = result.unique().scalars().all()
             return employees
+
+    async def get_by_name(self, db: AsyncSession, name: str):
+        """Retrieve a specific employee from the database based on their ID."""
+        async with db.begin():
+            query = select(self.model).filter(Employee.name == name)
+            result = await db.execute(query)
+            employee = result.unique().scalars().first()
+            return employee
 
     async def create_employee(
             self, db: AsyncSession, employee_data: BaseEmployeeSchema):
