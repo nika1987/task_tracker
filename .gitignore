@@ -26,3 +26,4 @@
 .idea//gradle.xml
 .idea//libraries
 .env
+!/.env
