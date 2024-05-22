@@ -47,7 +47,12 @@ async def get_busy_employees(db: AsyncSession = Depends(get_db)):
 @employee_router.get('/free', status_code=200)
 async def get_free_employees(db: AsyncSession = Depends(get_db)):
     employees = await employees_service.get_all_employees(db)
-    return [employee for employee in employees if len(employee.tasks) == 0]
+    free_employees = [employee for employee in employees if len(employee.tasks) == 0]
+
+    if not free_employees:
+        raise HTTPException(status_code=404, detail="Нет свободных работников")
+
+    return free_employees
 
 
 @employee_router.get('/{employee_id}')
