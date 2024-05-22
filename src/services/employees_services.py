@@ -82,10 +82,3 @@ class EmployeeService:
         employees_with_active_tasks = await (
             self.employee_dao.get_employees_busy(db))
         return employees_with_active_tasks
-
-    async def find_least_loaded_employee(
-            self, db: AsyncSession, task: TaskSchema
-    ):
-        """ This method retrieves the employee with the least loaded tasks"""
-        employee = await self.employee_dao.find_least_loaded_employee(db, task)
-        return employee
