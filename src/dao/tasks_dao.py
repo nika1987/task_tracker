@@ -59,13 +59,9 @@ class TaskDAO:
         """Retrieve important tasks from the database"""
         try:
             async with db.begin():
-                query = select(
-                    self.model).filter(
-                    self.model.status != 'active',
-                    self.model.parent_task_id is not None,
-                    self.model.parent_task.has(
-                        self.model.status == 'active'
-                    )
+                query = select(self.model).filter(
+                    self.model.is_important == True,  # Учитываем флаг is_important
+                    self.model.status != 'active'
                 )
             result = await db.execute(query)
             important_tasks = result.unique().scalars().all()

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.container import employees_service, tasks_service
@@ -46,23 +47,11 @@ async def get_busy_employees(db: AsyncSession = Depends(get_db)):
 @employee_router.get('/free', status_code=200)
 async def get_free_employees(db: AsyncSession = Depends(get_db)):
     important_tasks = await tasks_service.get_important_tasks(db)
-    if not important_tasks:
-        raise HTTPException(
-            status_code=404,
-            detail="You have no important tasks to find an employee"
-        )
     less_busy_employees = []
     for task in important_tasks:
-        found_employee = await employees_service.find_least_loaded_employee(
-            db, task)
-        less_busy_employees.append(
-            {'task': task, 'employee': found_employee.name})
-
-    if not less_busy_employees:
-        raise HTTPException(
-            status_code=404, detail="You have no free employees"
-        )
-    return less_busy_employees
+        found_employee = await employees_service.find_least_loaded_employee(db, task)
+        less_busy_employees.append({'task': task.__dict__, 'employee': found_employee.name})
+    return jsonable_encoder(less_busy_employees)
 
 
 @employee_router.get('/{employee_id}')
