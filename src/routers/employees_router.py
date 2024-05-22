@@ -49,9 +49,11 @@ async def get_free_employees(db: AsyncSession = Depends(get_db)):
     important_tasks = await tasks_service.get_important_tasks(db)
     less_busy_employees = []
     for task in important_tasks:
-        found_employee = await employees_service.find_least_loaded_employee(db, task)
-        less_busy_employees.append({'task': task.__dict__, 'employee': found_employee.name})
-    return jsonable_encoder(less_busy_employees)
+        found_employee = await employees_service.find_least_loaded_employee(
+            db, task)
+        less_busy_employees.append(
+            {'task': task, 'employee': found_employee.name})
+    return less_busy_employees
 
 
 @employee_router.get('/{employee_id}')
