@@ -92,3 +92,35 @@ class EmployeeDao:
             employees_with_active_tasks = result.unique().scalars().all()
 
         return employees_with_active_tasks
+
+    async def find_least_loaded_employee(
+            self, db: AsyncSession, task: TaskSchema
+    ):
+        """Find the employee with the least loaded tasks"""
+
+        free_employee_query = select(self.model).filter(
+            self.model.tasks is None
+        )
+        result = await db.execute(free_employee_query)
+        free_employee = result.unique().scalars().first()
+        less_loaded_employee_query = select(
+            self.model, count(self.model.tasks).label('count')
+        ).join(self.model.tasks).group_by(self.model.id).order_by(
+            asc('count')
+        )
+        result = await db.execute(less_loaded_employee_query)
+        least_loaded_employee = result.unique().scalars().first()
+        optimal_employee_query = select(
+            self.model
+
+        ).join(self.model.tasks).filter(
+            self.model.tasks.any(
+                parent_task_id=task.parent_task_id, status='active')
+        ).group_by(self.model).having(
+            count(self.model.tasks) <= len(least_loaded_employee.tasks) + 2
+        )
+
+        result = await db.execute(optimal_employee_query)
+        optimal_employee = result.unique().scalars().first()
+
+        return optimal_employee or free_employee or least_loaded_employee
